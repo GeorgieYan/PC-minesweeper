@@ -3,114 +3,97 @@
 
 
 int field[100][100];
-char input[100][100];
-int rows, columns;
-char symbol;
 
+int rows = 100;
+int columns = 100;
 
 int main(){
-    int field_number = 1;
-    int i, j, m, n, x;
+    int r, c;
+    int nField = 1;
 
     for(;;){
-        scanf("%d %d", &i, &j);
-        rows = i;
-        columns = j;
-
-        if(i > 100 || j > 100){
+        scanf("%d %d", &r, &c);
+        if(r == 0 && c == 0) {
             break;
         }
 
-        default_field();
-        default_input();
+        bounds(r, c);
+        clearField();
 
-        for(m = 0; m < i; m++){
-            for(n = 0; n < j; n++){
-                scanf("%c", symbol);
-                input[m][n] = symbol;
-            }
-        }
-
-        for(m = 0; m < i; m++){
-            for(n = 0; n < j; n++){
-                if(input[m][n] == "*"){
-                    field[m][n] = -1;
+        int i, j;
+        for(i = 0; i < r; i++){
+            char line[c + 1];
+            scanf("%s", line);
+            for(j = 0; j < c; j++){
+                char mine_detector = line[j];
+                if (mine_detector == '*'){
+                    setMine(i, j);
                 }
             }
         }
 
-        around_num();
-
-        printf("Field #%d:\n", field_number);
-
-        for(i = 0; i < rows; i++){
-            for(j = 0; j < columns; j++){
-                x = field[i][j];
-
-                if(x == -1){
-                    printf("*");
-                }
-                else{
-                    printf("%d", x);
-                }
-            }
+        if(nField > 1){
             printf("\n");
         }
 
-        field_number++;
+        printField(nField);
+
+        ++nField;
     }
+    return 0;
 }
 
-void default_input(){
-    int m, n;
-    for(m = 0; m < rows; m++){
-        for(n = 0; n < columns; n++){
-            input[m][n] = " ";
+void clearField(){
+    int i, j;
+    for(i = 0; i < rows; i++){
+        for(j = 0; j < columns; j++){
+            field[i][j] = 0;
         }
     }
 }
 
-void default_field(){
+void bounds(int l, int c){
+    rows = l;
+    columns = c;
+}
+
+int insideBounds(int i, int j){
+    return i >= 0 && i < rows && j >=0 && j < columns;
+}
+
+void increment(int i, int j){
+    if(insideBounds(i, j) && field[i][j] != -1) {
+        ++field[i][j];
+    }
+}
+
+void setMine(int i, int j){
+    field[i][j] = -1;
+
+
     int m, n;
-    for(m = 0; m < rows; m++){
-        for(n = 0; n < columns; n++){
-            field[m][n] = 0;
+    for(m = -1; m <= 1; m++){
+        for(n = -1; n <= 1; n++){
+            increment(i + m, j + n);
         }
     }
 }
 
-void around_num(){
-    int m, n;
-    int t, p;
-    for(t = 0; t < rows; t++){
-        for(p = 0; p < columns; p++){
-            if(field[t][p] = -1){
-                if(field[t - 1][p - 1] != -1){
-                    field[t - 1][p - 1]++;
-                }
-                if(field[t - 1][p] != -1){
-                    field[t - 1][p]++;
-                }
-                if(field[t - 1][p + 1] != -1){
-                    field[t - 1][p + 1]++;
-                }
-                if(field[t][p - 1] != -1){
-                    field[t][p - 1]++;
-                }
-                if(field[t][p + 1] != -1){
-                    field[t][p + 1]++;
-                }
-                if(field[t + 1][p - 1] != -1){
-                    field[t + 1][p - 1]++;
-                }
-                if(field[t + 1][p] != -1){
-                    field[t + 1][p]++;
-                }
-                if(field[t + 1][p + 1] != -1){
-                    field[t + 1][p + 1]++;
-                }
+void printField(nField){
+    printf("Field #%d:\n", nField);
+
+    int i, j, x;
+    for(i = 0; i < rows; i++){
+        for(j = 0; j < columns; j++){
+            x = field[i][j];
+
+            if(x == -1) {
+                printf("*");
+            }
+            else{
+                printf("%d", x);
             }
         }
+        printf("\n");
     }
 }
-
